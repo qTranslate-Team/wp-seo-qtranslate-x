@@ -15,6 +15,8 @@ Enables multilingual framework for plugin "WordPress SEO by Yoast".
 
 Enables [qTranslate-X](https://wordpress.org/plugins/qtranslate-x/) multilingual framework for plugin [WordPress SEO by Yoast](https://wordpress.org/plugins/wordpress-seo/).
 
+This plugin is currently a work in progress. Please, report the features, which did not work for you.
+
 == Installation ==
 
 Standard, as any other normal plugin hosted at WordPress.
