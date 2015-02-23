@@ -18,7 +18,7 @@ function qwpseo_add_admin_page_config($page_configs)
 
 	$fields[] = array( 'id' => 'yoast_wpseo_title' );
 	$fields[] = array( 'id' => 'yoast_wpseo_focuskw' );
-	//$fields[] = array( 'id' => 'yoast_wpseo_metadesc' );
+	$fields[] = array( 'id' => 'yoast_wpseo_metadesc' );
 	$fields[] = array( 'id' => 'wpseosnippet_title', 'encode' => 'display' );
 
 	$page_config['forms'][] = $f;
