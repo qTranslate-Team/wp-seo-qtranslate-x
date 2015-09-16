@@ -1,18 +1,20 @@
 <?php
 /**
  * Plugin Name: WordPress SEO & qTranslate-X
- * Plugin URI: https://wordpress.org/plugins/wordpress-seo-qtranslate-x
+ * Plugin URI: https://wordpress.org/plugins/wp-seo-qtranslate-x/
  * Description: Enables multilingual framework for plugin "WordPress SEO".
- * Version: 1.0
+ * Version: 1.0.2
  * Author: qTranslate Team
  * Author URI: http://qtranslatexteam.wordpress.com/about
  * License: GPL2
- * Tags: multilingual, multi, language, translation, qTranslate-X, Events Made Easy
+ * Tags: multilingual, multi, language, translation, qTranslate-X, WordPress SEO
  * Author e-mail: qTranslateTeam@gmail.com
+ * GitHub Plugin URI: https://github.com/qTranslate-Team/wp-seo-qtranslate-x/
+ * GitHub Branch: master
  */
 if(!defined('ABSPATH'))exit;
 
-define('QWPSEO_VERSION','1.0');
+define('QWPSEO_VERSION','1.0.2');
 
 function qwpseo_init_language($url_info)
 {

@@ -4,7 +4,7 @@ Contributors: johnclause
 Tags: multilingual, language, bilingual, i18n, l10n, multilanguage, translation, WordPress SEO
 Requires at least: 4.0
 Tested up to: 4.1.1
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv3 or later
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=QEXEK3HX8AR6U
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -38,6 +38,9 @@ Plugin does not have any configuration options, simply activate it and it will e
 No need for Upgrade Notice.
 
 == Changelog ==
+
+= 1.0.1 =
+* Improvement: added translations on`edit-tags.php` page.
 
 = 1.0 =
 * Initial release
