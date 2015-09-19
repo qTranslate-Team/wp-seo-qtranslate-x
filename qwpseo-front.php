@@ -32,6 +32,22 @@ add_filter( 'wpseo_metadesc', 'qwpseo_test_filter');
 add_filter( 'wpseo_replacements', 'qwpseo_test_filter');
 */
 
+function qwpseo_sitemap_urlimages( $images, $id )
+{
+	//qtranxf_dbg_log('qwpseo_sitemap_urlimages('.$id.'): $images: ',$images);
+	$srcs = array();
+	foreach($images as $k => $image){
+		$src = $image['src'];
+		if(isset($srcs[$src])){
+			unset($images[$k]);
+		}else{
+			$srcs[$src] = $image;
+		}
+	}
+	return $images;
+}
+add_filter( 'wpseo_sitemap_urlimages', 'qwpseo_sitemap_urlimages', 999, 2);
+
 function qwpseo_sitemap_entry( $url, $post_type, $p )
 {
 	//qtranxf_dbg_log('qwpseo_sitemap_entry: $post_type: '.$post_type.'; $url: ', $url);
@@ -55,6 +71,7 @@ function qwpseo_sitemap_entry( $url, $post_type, $p )
 	return $url;
 }
 add_filter( 'wpseo_sitemap_entry', 'qwpseo_sitemap_entry', 999, 3 );
+
 
 /*
 function qwpseo_sitemap_index( $sitemap )
