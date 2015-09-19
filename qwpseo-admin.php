@@ -13,38 +13,35 @@ function qwpseo_add_admin_page_config($page_configs)
 	$page_config['forms'] = array();
 
 	$f = array();
-	$f['form'] = array( 'id' => 'post' );//identify the form which input fields described below belong to
-
 	$f['fields'] = array();
 	$fields = &$f['fields']; // shorthand
 
-	$fields[] = array( 'id' => 'yoast_wpseo_title' );
-	$fields[] = array( 'id' => 'yoast_wpseo_focuskw' );
-	$fields[] = array( 'id' => 'yoast_wpseo_metadesc', 'encode' => '{' );
-	$fields[] = array( 'id' => 'wpseosnippet_title', 'encode' => 'display' );
+	$fields['yoast_wpseo_title'] = array();
+	$fields['yoast_wpseo_focuskw'] = array();
+	$fields['yoast_wpseo_metadesc'] = array('encode' => '{' );
+	$fields['yoast_wpseo_metakeywords'] = array();
+	$fields['wpseosnippet_title'] = array('encode' => 'display' );
 
-	$page_config['forms'][] = $f;
+	$page_config['forms']['post'] = $f;
 	$page_configs[] = $page_config;
 	}
 
 	{
 	$page_config = array();
 	$page_config['pages'] = array( 'edit-tags.php' => 'action=edit' );
-	//$page_config['anchors'] = array( 'titlediv' );
 
 	$page_config['forms'] = array();
 
 	$f = array();
-	$f['form'] = array( 'id' => 'edittag' );//identify the form which input fields described below belong to
-
 	$f['fields'] = array();
 	$fields = &$f['fields']; // shorthand
 
-	$fields[] = array( 'id' => 'wpseo_title' );
-	$fields[] = array( 'id' => 'wpseo_desc' );
-	$fields[] = array( 'id' => 'wpseo_canonical' );
+	$fields['wpseo_title'] = array();
+	$fields['wpseo_desc'] = array();
+	$fields['wpseo_metakey'] = array();//'encode' => '{');
+	$fields['wpseo_canonical'] = array();
 
-	$page_config['forms'][] = $f;
+	$page_config['forms']['edittag'] = $f;
 	$page_configs[] = $page_config;
 	}
 
