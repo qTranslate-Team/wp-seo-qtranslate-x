@@ -38,7 +38,7 @@ function qwpseo_add_admin_page_config($page_configs)
 
 	$fields['wpseo_title'] = array();
 	$fields['wpseo_desc'] = array();
-	$fields['wpseo_metakey'] = array();//'encode' => '{');
+	$fields['wpseo_metakey'] = array();
 	$fields['wpseo_canonical'] = array();
 
 	$page_config['forms']['edittag'] = $f;
