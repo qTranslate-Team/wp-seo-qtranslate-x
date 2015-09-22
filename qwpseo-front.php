@@ -57,25 +57,29 @@ function qwpseo_sitemap_index( $sm )
 	$content = ob_get_contents();
 	ob_end_clean();
 	//qtranxf_dbg_log('qwpseo_sitemap_index: $content: ', $content);
-	$sm = '';
 	$p = 0;
+	$sitemaps = array();
 	while(($p = strpos($content,'<sitemap>',$p))!==false){
 		if(($e = strpos($content,'</sitemap>',$p)) !== false){
 			$len = $e - $p + strlen('</sitemap>');
 			$s = substr($content, $p, $len);
 			//qtranxf_dbg_log('qwpseo_sitemap_index: $s: ', $s);
-			foreach($q_config['enabled_languages'] as $lang){
-				//if($lang == $q_config['default_language']) continue;
-				if($lang == $q_config['language']) continue;
-				//$sm .= preg_replace('!<loc>(.*)/([^/]+)</loc>!','<loc>$1/'.$lang.'-$2</loc>',$s);
-				if(preg_match('!<loc>([^<]+)</loc>!',$s,$matches)){
-					$loc = $matches[1];
-					$sm .= preg_replace('!<loc>([^<]+)</loc>!','<loc>'.qtranxf_convertURL($loc,$lang).'</loc>',$s);
-				}
-			}
 			$p += $len;
+			$sitemaps[] = $s;
 		}else{
 			$p += strlen('<sitemap>');
+		}
+	}
+	$sm = '';
+	foreach($q_config['enabled_languages'] as $lang){
+		//if($lang == $q_config['default_language']) continue;
+		if($lang == $q_config['language']) continue;
+		//$sm .= preg_replace('!<loc>(.*)/([^/]+)</loc>!','<loc>$1/'.$lang.'-$2</loc>',$s);
+		foreach($sitemaps as $s){
+			if(preg_match('!<loc>([^<]+)</loc>!',$s,$matches)){
+				$loc = $matches[1];
+				$sm .= preg_replace('!<loc>([^<]+)</loc>!','<loc>'.qtranxf_convertURL($loc,$lang).'</loc>',$s);
+			}
 		}
 	}
 	//qtranxf_dbg_log('qwpseo_sitemap_index: $sm: ', $sm);
