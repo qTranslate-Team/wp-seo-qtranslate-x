@@ -87,6 +87,15 @@ function qwpseo_sitemap_index( $sm )
 }
 add_filter( 'wpseo_sitemap_index', 'qwpseo_sitemap_index');
 
+function qwpseo_enable_xml_sitemap_post_url( $loc, $p ){
+	global $q_config;
+	$lang = $q_config['language'];
+	//qtranxf_dbg_log('qwpseo_enable_xml_sitemap_post_url: $sm: ', $p);
+	$p->post_content = qtranxf_use_language($lang,$p->post_content,false,true);
+	return $loc;
+}
+add_filter( 'wpseo_xml_sitemap_post_url', 'qwpseo_enable_xml_sitemap_post_url', 5, 2);
+
 /**
  * Has to be disabled for now, unless we ask Yoast to filter cache key to make it depend on active language.
  * @since 1.0.3
