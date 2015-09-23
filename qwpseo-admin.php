@@ -51,14 +51,21 @@ function qwpseo_add_admin_page_config($page_configs)
 function qwpseo_admin_filters()
 {
 	global $pagenow;
-	if($pagenow != 'edit.php') return;
-	//if( strpos($_SERVER['QUERY_STRING'],'post_type=post')===FALSE && strpos($_SERVER['QUERY_STRING'],'post_type=page')===FALSE) return;
-	add_filter( 'wpseo_title', 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage');
-	add_filter( 'wpseo_meta', 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage');
-	add_filter( 'wpseo_metadesc', 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage');
-	//focus keywords are still not translated
+	switch($pagenow){
+		case 'edit.php':
+			add_filter( 'wpseo_title', 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage');
+			add_filter( 'wpseo_meta', 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage');
+			add_filter( 'wpseo_metadesc', 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage');
+		break;
+		case 'post.php':
+			add_filter( 'wpseo_pre_analysis_post_content', 'qtranxf_useCurrentLanguageIfNotFoundShowEmpty');
+		break;
+	}
 }
 qwpseo_admin_filters();
+
+function qwpseo_use_page_analysis($a){ return false; }
+add_filter( 'wpseo_use_page_analysis', 'qwpseo_use_page_analysis' );
 
 /*
 function qwpseo_manage_custom_column($column)
