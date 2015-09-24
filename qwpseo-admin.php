@@ -1,6 +1,7 @@
 <?php
 if(!defined('ABSPATH'))exit;
 
+/* moved to i18n-config.xml 
 add_filter('qtranslate_load_admin_page_config','qwpseo_add_admin_page_config');//obsolete
 //add_filter('i18n_admin_config','qwpseo_add_admin_page_config');// should be used instead
 function qwpseo_add_admin_page_config($page_configs)
@@ -47,6 +48,7 @@ function qwpseo_add_admin_page_config($page_configs)
 
 	return $page_configs;
 }
+*/
 
 function qwpseo_admin_filters()
 {
@@ -66,6 +68,21 @@ qwpseo_admin_filters();
 
 function qwpseo_use_page_analysis($a){ return false; }
 add_filter( 'wpseo_use_page_analysis', 'qwpseo_use_page_analysis' );
+
+function qwpseo_xmlsitemaps_config()
+{
+	global $q_config;
+	echo '<p>';
+	echo __('In addition to main XML Sitemap, you may also view sitemaps for each individual language:').PHP_EOL;
+	echo '<ul>'.PHP_EOL;
+	$url = home_url('i18n-index-sitemap.xml');
+	foreach($q_config['enabled_languages'] as $lang){
+		$u = qtranxf_convertURL($url,$lang,true);
+		echo '<li><a href="'.$u.'" target="_blank">'.$u.'</a>&nbsp;-&nbsp;'.$q_config['language_name'][$lang].' ('.$lang.')</li>'.PHP_EOL;
+	}
+	echo '</ul></p>'.PHP_EOL;
+}
+add_action( 'wpseo_xmlsitemaps_config', 'qwpseo_xmlsitemaps_config' );
 
 /*
 function qwpseo_manage_custom_column($column)

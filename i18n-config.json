@@ -1,4 +1,46 @@
 {"vendor":{"plugins/wp-seo-qtranslate-x":"1.0"},
 "admin-config":{
+"post":{
+	"pages":{"post.php":"", "post-new.php":""},
+	"forms":{
+		"post":{
+			"fields":{
+				"yoast_wpseo_title":{},
+				"yoast_wpseo_focuskw":{},
+				"yoast_wpseo_metadesc":{"encode":"{"},
+				"yoast_wpseo_metakeywords":{},
+				"wpseosnippet_title":{"encode":"display"}
+			}
+		}
+	},
+	"js-exec":{"post-exec":{"src":"./js/post-exec.min.js"}}
+}
+,
+"edit-tag":{
+	"pages":{"edit-tags.php":"action=edit"},
+	"forms":{
+		"edittag":{
+			"fields":{
+				"wpseo_title":{},
+				"wpseo_desc":{},
+				"wpseo_metakey":{},
+				"wpseo_canonical":{}
+			}
+		}
+	}
+}
+}
+,
+"front-config":{
+"all-pages":{
+	"filters":{
+		"text":{
+			"wpseo_title":"20",
+			"wpseo_meta":"20",
+			"wpseo_metadesc":"20",
+			"wpseo_replacements":"20"
+		}
+	}
+}
 }
 }

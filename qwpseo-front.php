@@ -1,6 +1,7 @@
 <?php
 if(!defined('ABSPATH'))exit;
 
+/* moved to i18n-config.json
 function qwpseo_add_filters_front() {
 	$use_filters = array(
 		//'wpseo_opengraph_title' => 20,//comes already translated
@@ -17,7 +18,9 @@ function qwpseo_add_filters_front() {
 	}
 }
 qwpseo_add_filters_front();
+*/
 
+// sitemaps handling
 /**
  * Remove duplicated images and translates image attributes.
  * @since 1.0.3
@@ -51,6 +54,7 @@ add_filter( 'wpseo_sitemap_urlimages', 'qwpseo_sitemap_urlimages', 999, 2);
 function qwpseo_sitemap_index( $sm )
 {
 	global $q_config, $wpseo_sitemaps;
+	if(isset($q_config['sitemap-type'])) return;
 	//qtranxf_dbg_log('qwpseo_sitemap_index: $wpseo_sitemaps: ', $wpseo_sitemaps);
 	ob_start();
 	$wpseo_sitemaps->output();
@@ -87,6 +91,9 @@ function qwpseo_sitemap_index( $sm )
 }
 add_filter( 'wpseo_sitemap_index', 'qwpseo_sitemap_index');
 
+/**
+ * Translates $p->post_content to make image lookup work correctly later.
+*/
 function qwpseo_enable_xml_sitemap_post_url( $loc, $p ){
 	global $q_config;
 	$lang = $q_config['language'];
@@ -97,27 +104,36 @@ function qwpseo_enable_xml_sitemap_post_url( $loc, $p ){
 add_filter( 'wpseo_xml_sitemap_post_url', 'qwpseo_enable_xml_sitemap_post_url', 5, 2);
 
 /**
- * Has to be disabled for now, unless we ask Yoast to filter cache key to make it depend on active language.
+ * Has to be disabled for now, unless we ask Yoast to add a filter to alter cache key name depending on active language.
  * @since 1.0.3
 */
 function qwpseo_enable_xml_sitemap_transient_caching( $caching ){ return false; }
 add_filter( 'wpseo_enable_xml_sitemap_transient_caching', 'qwpseo_enable_xml_sitemap_transient_caching' );
 
-/*
+/**
+ * 
+ * @since 1.0.3
+*/
 function qwpseo_build_sitemap_post_type( $type )
 {
 	global $q_config;
-	//qtranxf_dbg_log('qwpseo_build_sitemap_post_type: $type: ', $type);
-	$matches = array();
-	if(preg_match('!([^-]+)-([^-]+)!',$type,$matches)){
-		//qtranxf_dbg_log('qwpseo_build_sitemap_post_type: $matches: ', $matches);
-		$q_config['language'] = $matches[1];
-		$type = $matches[2];
+	//$lang = $q_config['language'];
+	if($type == 'i18n-index'){
+		$q_config['sitemap-type'] = $type;
+		return 1;//root map for single language
 	}
+	//qtranxf_dbg_log('qwpseo_build_sitemap_post_type: $type: ', $type);
+	//$matches = array();
+	//if(preg_match('!([^-]+)-([^-]+)!',$type,$matches)){
+	//	//qtranxf_dbg_log('qwpseo_build_sitemap_post_type: $matches: ', $matches);
+	//	$q_config['language'] = $matches[1];
+	//	$type = $matches[2];
+	//}
 	return $type;
 }
 add_filter( 'wpseo_build_sitemap_post_type', 'qwpseo_build_sitemap_post_type', 5);
 
+/*
 function qwpseo_sitemap_entry( $url, $post_type, $p )
 {
 	//qtranxf_dbg_log('qwpseo_sitemap_entry: $post_type: '.$post_type.'; $url: ', $url);
