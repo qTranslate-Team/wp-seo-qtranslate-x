@@ -4,7 +4,7 @@ Contributors: johnclause
 Tags: multilingual, language, bilingual, i18n, l10n, multilanguage, translation, Yoast SEO
 Requires at least: 4.0
 Tested up to: 4.4
-Stable tag: 1.0.2
+Stable tag: 1.1
 License: GPLv3 or later
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=QEXEK3HX8AR6U
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -43,12 +43,12 @@ No need for an Upgrade Notice.
 
 == Changelog ==
 
-= 1.0.3 =
+= 1.1 stable =
 * Enhancement: multilingual sitemaps, require qTranslate-X 3.4.5: [Issue #1](https://github.com/qTranslate-Team/wp-seo-qtranslate-x/issues/1).
 * Enhancement: A few more fields are made multilingual.
 * Fix: Disabled "Page Analysis" as it does not currently integrated anyway.
 
-= 1.0.2 =
+= 1.0.2 stable =
 * Improvement: encoding of `yoast_wpseo_metadesc` and `yoast_wpseo_focuskw` is changed to '{' to deal with imperfections of Yoast java script.
 
 = 1.0.1 =
