@@ -109,7 +109,7 @@ function qwpseo_xmlsitemaps_config()
 	echo '<ul>'.PHP_EOL;
 	$url = home_url('i18n-index-sitemap.xml');
 	foreach($q_config['enabled_languages'] as $lang){
-		$u = qtranxf_convertURL($url,$lang,true);
+		$u = qtranxf_convertURL($url,$lang,true,true);
 		echo '<li><a href="'.$u.'" target="_blank">'.$u.'</a>&nbsp;-&nbsp;'.$q_config['language_name'][$lang].' ('.$lang.')</li>'.PHP_EOL;
 	}
 	echo '</ul></p>'.PHP_EOL;
