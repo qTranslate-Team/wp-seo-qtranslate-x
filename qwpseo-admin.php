@@ -52,7 +52,7 @@ function qwpseo_add_admin_page_config($page_configs)
 
 function qwpseo_admin_filters()
 {
-	global $pagenow;
+	global $pagenow, $q_config;
 	switch($pagenow){
 		case 'edit.php':
 			add_filter( 'wpseo_title', 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage');
@@ -60,18 +60,50 @@ function qwpseo_admin_filters()
 			add_filter( 'wpseo_metadesc', 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage');
 		break;
 		case 'post.php':
+			if($q_config['editor_mode'] == QTX_EDITOR_MODE_SINGLGE){
+				add_filter( 'get_post_metadata', 'qwpseo_get_post_metadata', 5, 4);
+				//add_filter( 'option_blogname', 'qwpseo_option_blogname');
+				add_filter( 'option_blogname', 'qtranxf_useCurrentLanguageIfNotFoundShowEmpty');
+			}
 			add_filter( 'wpseo_pre_analysis_post_content', 'qtranxf_useCurrentLanguageIfNotFoundShowEmpty');
 		break;
 	}
 }
 qwpseo_admin_filters();
 
-function qwpseo_use_page_analysis($a){ return false; }
-add_filter( 'wpseo_use_page_analysis', 'qwpseo_use_page_analysis' );
+function qwpseo_get_post_metadata($original_value, $object_id, $meta_key = '', $single = false)
+{
+	global $q_config;
+	if(empty($meta_key)){
+		//very ugly hack
+		$trace = debug_backtrace();
+		//qtranxf_dbg_log('qwpseo_get_post_metadata: $trace: ',$trace);
+		//qtranxf_dbg_log('qwpseo_get_post_metadata: $trace[6][args][0]: ',$trace[6]['args'][0]);
+		//qtranxf_dbg_log('qwpseo_get_post_metadata: $trace[7][function]: ',$trace[7]['function']);
+		if( isset($trace[7]['function']) && $trace[7]['function'] === 'calculate_results' &&
+				isset($trace[6]['args'][0]) && $trace[6]['args'][0] === 'focuskw'
+		){
+			//qtranxf_dbg_log('qwpseo_get_post_metadata: $object_id: ',$object_id);
+			//qtranxf_dbg_log('qwpseo_get_post_metadata: $single: ',$single);
+			$key = WPSEO_Meta::$meta_prefix . 'focuskw';
+			$focuskw = get_metadata('post',$object_id,$key,true);
+			//qtranxf_dbg_log('qwpseo_get_post_metadata: $focuskw: ',$focuskw);
+			$focuskw = qtranxf_use_language($q_config['language'],$focuskw);
+			return array( $key => array($focuskw));
+		}
+	}
+	return $original_value;
+}
 
+/**
+ * adds single-language sitemap links to the Yoast configuration page for XML Sitemaps.
+*/
 function qwpseo_xmlsitemaps_config()
 {
 	global $q_config;
+	$options = get_option( 'wpseo_xml' );
+	//qtranxf_dbg_log('qwpseo_xmlsitemaps_config: $options: ',$options);
+	if(empty($options['enablexmlsitemap'])) return;
 	echo '<p>';
 	echo __('In addition to main XML Sitemap, you may also view sitemaps for each individual language:').PHP_EOL;
 	echo '<ul>'.PHP_EOL;
@@ -85,6 +117,13 @@ function qwpseo_xmlsitemaps_config()
 add_action( 'wpseo_xmlsitemaps_config', 'qwpseo_xmlsitemaps_config' );
 
 /*
+function qwpseo_option_blogname($value)
+{
+	global $q_config, $wp_current_filter;
+	qtranxf_dbg_log('qwpseo_option_blogname: $value: ',$value);
+	return $value;
+}
+
 function qwpseo_manage_custom_column($column)
 {
 	switch($column){

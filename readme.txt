@@ -19,7 +19,7 @@ At least version 3.4 of [qTranslate-X](https://wordpress.org/plugins/qtranslate-
 
 This plugin is currently a work in progress, please review the [Known Issues](https://wordpress.org/plugins/wp-seo-qtranslate-x/other_notes/) and report the features, which did not work for you.
 
-The biggest issue is that "Page Analysis" has not yet been integarated. If you have time and resources, please, feel free to submit pool request to the plugin [repository at GitHub](https://github.com/qTranslate-Team/wp-seo-qtranslate-x/pulls) with the implementation.
+The biggest issue is that "Page Analysis" has not yet been integarated, and it is disabled unless Single Language Editor Mode is in use, which can be set on "Advanced" tab of "Languages" configuration page: `/wp-admin/options-general.php?page=qtranslate-x#advanced`. If you have time and resources, please feel free to submit pool request to the plugin [repository at GitHub](https://github.com/qTranslate-Team/wp-seo-qtranslate-x/pulls) with the implementation of "Page Analysis" for other editor modes. Unfortunately, it may not be possible without asking Yoast to put a few additional filters within "Yoast SEO" plugin code.
 
 == Installation ==
 
@@ -43,12 +43,13 @@ No need for an Upgrade Notice.
 
 == Changelog ==
 
-= 1.1 stable =
+= 1.1 =
 * Enhancement: multilingual sitemaps, require qTranslate-X 3.4.5: [Issue #1](https://github.com/qTranslate-Team/wp-seo-qtranslate-x/issues/1).
+* Enhancement: moved to the new [integration](https://qtranslatexteam.wordpress.com/integration/) way using i18n-config.json file. You have to deactivate/activate plugin when updating. Normal WP update would be sufficient, but if you simply override the files, then you will miss the plugin integaration configuration.
 * Enhancement: A few more fields are made multilingual.
-* Fix: Disabled "Page Analysis" as it does not currently integrated anyway.
+* Fix: "Page Analysis" is disabled unlesss Single Language Editor Mode is in use as it is not currently integrated in any other Editor Mode.
 
-= 1.0.2 stable =
+= 1.0.2 =
 * Improvement: encoding of `yoast_wpseo_metadesc` and `yoast_wpseo_focuskw` is changed to '{' to deal with imperfections of Yoast java script.
 
 = 1.0.1 =
@@ -59,7 +60,7 @@ No need for an Upgrade Notice.
 
 == Known Issues ==
 
-* Yoast SEO "Page Analysis" is not yet integrated and is disabled to prevent confusions.
+* Yoast SEO "Page Analysis" is not yet integrated and is mostly disabled to prevent confusions. It is only experimentally enabled in Single Language Editor Mode, which can be set on "Advanced" tab of "Languages" configuration page, `/wp-admin/options-general.php?page=qtranslate-x#advanced`. If you have time and resources, please feel free to submit pool request to the plugin [repository at GitHub](https://github.com/qTranslate-Team/wp-seo-qtranslate-x/pulls) with the implementation of "Page Analysis" for other editor modes. Unfortunately, it may not be possible without asking Yoast to put a few additional filters within "Yoast SEO" plugin code.
 * [plugin Yoast SEO issue] When XML Sitemaps are enabled on Yoast configuration page `/wp-admin/admin.php?page=wpseo_xml` and Yoast plugin is deactivated, it clears rewrite rules needed for sitemap to function. On next activation of Yoast plugin, sitemaps no longer function until their functionality is deactivated and then activated again on Yoast configuration page "XML Sitemaps".
 * [Resolved in plugin version 1.0.2 under qTranslate-X 3.4.4] Field 'Meta description' is not coming back correctly after saving. In some configurations it works though. The nature of conflict is not yet known. You would need to keep this field empty, if you are affected.
 * [not really an issue] Sitemaps do not work quite right in Query URL Modification Mode. Query Mode is not supposed to be used for SEO.
