@@ -48,9 +48,57 @@ function qwpseo_sitemap_urlimages( $images, $id )
 add_filter( 'wpseo_sitemap_urlimages', 'qwpseo_sitemap_urlimages', 999, 2);
 
 /**
- * Adds other language sitemaps.
+ * Generate top level index for hierarchical sitemaps.
  * @since 1.0.3
 */
+function qwpseo_sitemap_index( $sm )
+{
+	global $q_config, $wpseo_sitemaps;
+	if(isset($q_config['sitemap-type'])) return '';
+	//qtranxf_dbg_log('qwpseo_sitemap_index: $wpseo_sitemaps: ', $wpseo_sitemaps);
+	ob_start();
+	$wpseo_sitemaps->output();
+	$content = ob_get_contents();
+	ob_end_clean();
+	//qtranxf_dbg_log('qwpseo_sitemap_index: $content: ', $content);
+	$matches;
+	$lastmod = '';
+	$p = 0;
+	$sitemaps = array();
+	while(($p = strpos($content,'<sitemap>',$p))!==false){
+		if(($e = strpos($content,'</sitemap>',$p)) !== false){
+			$len = $e - $p + strlen('</sitemap>');
+			$s = substr($content, $p, $len);
+			//qtranxf_dbg_log('qwpseo_sitemap_index: $s: ', $s);
+			$p += $len;
+			$sitemaps[] = $s;
+			if(preg_match('!<lastmod>\\s*([^\\s<]+)\\s*</lastmod>!s',$s,$matches)){
+				if(empty($lastmod) || strcmp($lastmod,$matches[1])<0) $lastmod = $matches[1];
+			}
+		}else{
+			$p += strlen('<sitemap>');
+		}
+	}
+	if(preg_match('/<sitemapindex[^>]*>/',$content,$matches))
+		$sm = $matches[0];
+	else
+		$sm = '';
+	//qtranxf_dbg_log('qwpseo_sitemap_index: $sitemapindex: ', $sm);
+	$wpseo_sitemaps->set_sitemap($sm);
+	$url = home_url('i18n-index-sitemap.xml');
+	$sm = '';
+	foreach($q_config['enabled_languages'] as $lang){
+		$sm .= '<sitemap>'.PHP_EOL;
+		$sm .= '<loc>'.esc_url(qtranxf_convertURL($url,$lang,true,true)).'</loc>'.PHP_EOL;
+		if(!empty($lastmod)) $sm .= '<lastmod>'.$lastmod.'</lastmod>'.PHP_EOL;
+		$sm .= '</sitemap>'.PHP_EOL;
+	}
+	//qtranxf_dbg_log('qwpseo_sitemap_index: $sm: ', $sm);
+	return $sm;
+}
+
+/*
+ * Adds other language sitemaps.
 function qwpseo_sitemap_index( $sm )
 {
 	global $q_config, $wpseo_sitemaps;
@@ -89,6 +137,7 @@ function qwpseo_sitemap_index( $sm )
 	//qtranxf_dbg_log('qwpseo_sitemap_index: $sm: ', $sm);
 	return $sm;
 }
+*/
 add_filter( 'wpseo_sitemap_index', 'qwpseo_sitemap_index');
 
 /**
