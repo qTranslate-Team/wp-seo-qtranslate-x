@@ -12,8 +12,7 @@
 				"wpseosnippet_title":{"encode":"display"}
 			}
 		}
-	},
-	"js-exec":{"post-exec":{"src":"./js/post-exec.min.js"}}
+	}
 }
 ,
 "edit-tag":{
