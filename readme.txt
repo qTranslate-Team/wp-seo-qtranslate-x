@@ -15,11 +15,11 @@ Enables multilingual framework for plugin "Yoast SEO".
 
 Enables [qTranslate-X](https://wordpress.org/plugins/qtranslate-x/) multilingual framework for plugin [Yoast SEO](https://wordpress.org/plugins/wordpress-seo/).
 
-At least version 3.4 of [qTranslate-X](https://wordpress.org/plugins/qtranslate-x/) is required.
+At least version 3.4.5 of [qTranslate-X](https://wordpress.org/plugins/qtranslate-x/) is required.
 
 This plugin is currently a work in progress, please review the [Known Issues](https://wordpress.org/plugins/wp-seo-qtranslate-x/other_notes/) and report the features, which did not work for you.
 
-The biggest issue is that "Page Analysis" has not yet been integarated, and it is disabled unless Single Language Editor Mode is in use, which can be set on "Advanced" tab of "Languages" configuration page: `/wp-admin/options-general.php?page=qtranslate-x#advanced`. If you have time and resources, please feel free to submit pool request to the plugin [repository at GitHub](https://github.com/qTranslate-Team/wp-seo-qtranslate-x/pulls) with the implementation of "Page Analysis" for other editor modes. Unfortunately, it may not be possible without asking Yoast to put a few additional filters within "Yoast SEO" plugin code.
+The biggest issue is that "Page Analysis" has not yet been fully integarated, and it is disabled unless Single Language Editor Mode is in use, which can be set on "Advanced" tab of "Languages" configuration page: `/wp-admin/options-general.php?page=qtranslate-x#advanced`. If you have time and resources, please feel free to submit pool request to the plugin [repository at GitHub](https://github.com/qTranslate-Team/wp-seo-qtranslate-x/pulls) with the implementation of "Page Analysis" for other editor modes. However, it may not be possible without asking Yoast to put a few additional filters within ["Yoast SEO" plugin code](https://github.com/Yoast/wordpress-seo).
 
 == Installation ==
 
@@ -37,6 +37,10 @@ Plugin does not have any configuration options, and no screenshots needed.
 
 Plugin does not have any configuration options, simply activate it and it will enable the translation of relevant fields for Yoast SEO back- and front-end.
 
+= Something does not work right, is me? =
+
+Review "Known Issues" 
+
 == Upgrade Notice ==
 
 No need for an Upgrade Notice.
@@ -47,7 +51,7 @@ No need for an Upgrade Notice.
 * Enhancement: multilingual sitemaps, require qTranslate-X 3.4.5: [Issue #1](https://github.com/qTranslate-Team/wp-seo-qtranslate-x/issues/1).
 * Enhancement: moved to the new [integration](https://qtranslatexteam.wordpress.com/integration/) way using i18n-config.json file. You have to deactivate/activate plugin when updating. Normal WP update would be sufficient, but if you simply override the files, then you will miss the plugin integaration configuration.
 * Enhancement: A few more fields are made multilingual.
-* Fix: "Page Analysis" is disabled unlesss Single Language Editor Mode is in use as it is not currently integrated in any other Editor Mode.
+* Fix: "Page Analysis" is disabled unlesss Single Language Editor Mode is in use. "Page Analysis" is not currently integrated in any other Editor Mode.
 
 = 1.0.2 =
 * Improvement: encoding of `yoast_wpseo_metadesc` and `yoast_wpseo_focuskw` is changed to '{' to deal with imperfections of Yoast java script.

@@ -60,11 +60,17 @@ function qwpseo_admin_filters()
 			add_filter( 'wpseo_metadesc', 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage');
 		break;
 		case 'post.php':
+		case 'post-new.php':
 			if($q_config['editor_mode'] == QTX_EDITOR_MODE_SINGLGE){
 				add_filter( 'get_post_metadata', 'qwpseo_get_post_metadata', 5, 4);
-				//add_filter( 'option_blogname', 'qwpseo_option_blogname');
-				add_filter( 'option_blogname', 'qtranxf_useCurrentLanguageIfNotFoundShowEmpty');
+				//add_filter( 'option_blogname', 'qtranxf_useCurrentLanguageIfNotFoundShowEmpty');
 			}
+
+			//to prevent the effect of 'strip_tags' in function 'retrieve_sitename' in '/wp-content/plugins/wordpress-seo/inc/class-wpseo-replace-vars.php'
+			add_filter( 'option_blogname', 'qwpseo_encode_swirly');
+			add_filter( 'option_blogdescription', 'qwpseo_encode_swirly');
+
+			//to make "Page Analysis" work in Single Language Mode
 			add_filter( 'wpseo_pre_analysis_post_content', 'qtranxf_useCurrentLanguageIfNotFoundShowEmpty');
 		break;
 	}
@@ -104,26 +110,42 @@ function qwpseo_xmlsitemaps_config()
 	$options = get_option( 'wpseo_xml' );
 	//qtranxf_dbg_log('qwpseo_xmlsitemaps_config: $options: ',$options);
 	if(empty($options['enablexmlsitemap'])) return;
-	echo '<p>';
+	printf(__('%sNotes from %s'.PHP_EOL), '<h3>', 'qTranslate&#8209;X</h3>');
+	echo '<p>'.PHP_EOL;
 	echo __('In addition to main XML Sitemap, you may also view sitemaps for each individual language:').PHP_EOL;
 	echo '<ul>'.PHP_EOL;
+	$sitemap_index_url = qtranxf_convertURL(get_option('home').'/sitemap_index.xml', $q_config['default_language'], true);
 	$url = home_url('i18n-index-sitemap.xml');
+	$rb = '';
 	foreach($q_config['enabled_languages'] as $lang){
-		$u = qtranxf_convertURL($url,$lang,true,true);
-		echo '<li><a href="'.$u.'" target="_blank">'.$u.'</a>&nbsp;-&nbsp;'.$q_config['language_name'][$lang].' ('.$lang.', '.$q_config['locale'][$lang].')</li>'.PHP_EOL;
+		$href = qtranxf_convertURL($url,$lang,true,true);
+		$u = $q_config['default_language'] == $lang ? qtranxf_convertURL($url,$lang,true,false) : $href;
+		echo '<li>'.$q_config['language_name'][$lang].' ('.$lang.', '.$q_config['locale'][$lang].'): <a href="'.$href.'" target="_blank">'.$u.'</a></li>'.PHP_EOL;
+		$rb .= 'Sitemap: '.$u.PHP_EOL;
 	}
-	echo '</ul></p>'.PHP_EOL;
+	echo '</ul><br />'.PHP_EOL;
+	printf(__('It is advisable to append the site\'s "%s" with the following entries'),'/robots.txt');
+	$nmaps = count($q_config['enabled_languages'])+1;
+	echo '<br /><textarea class="widefat" rows="'.$nmaps.'" name="robots-sitemaps" readonly="readonly">'.$rb.'</textarea>'.PHP_EOL;
+	//echo '<pre>'.$rb.'</pre>'.PHP_EOL;
+	echo '<br />or with this single entry<br /><textarea class="widefat" rows="2" name="robots-sitemap" readonly="readonly">Sitemap: '.$sitemap_index_url.'</textarea>'.PHP_EOL;
+	echo '<br />Do not combine two sets together, since they both equally cover all languages in all pages as defined by Yoast configuration.';
+	echo '</p>'.PHP_EOL;
 }
 add_action( 'wpseo_xmlsitemaps_config', 'qwpseo_xmlsitemaps_config' );
 
-/*
-function qwpseo_option_blogname($value)
+/**
+ * Change encoding of $value to swirly breckets, '{'.
+ * @since 1.1
+*/
+function qwpseo_encode_swirly($value)
 {
-	global $q_config, $wp_current_filter;
-	qtranxf_dbg_log('qwpseo_option_blogname: $value: ',$value);
+	//qtranxf_dbg_log('qwpseo_encode_swirly: $value: ',$value);
+	$value = preg_replace('#\[:([a-z]{2}|)\]#i','{:$1}',$value);
 	return $value;
 }
 
+/*
 function qwpseo_manage_custom_column($column)
 {
 	switch($column){

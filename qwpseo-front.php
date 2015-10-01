@@ -50,7 +50,7 @@ add_filter( 'wpseo_sitemap_urlimages', 'qwpseo_sitemap_urlimages', 999, 2);
 /**
  * Generate top level index for hierarchical sitemaps.
  * @since 1.0.3
-*/
+*
 function qwpseo_sitemap_index( $sm )
 {
 	global $q_config, $wpseo_sitemaps;
@@ -95,14 +95,18 @@ function qwpseo_sitemap_index( $sm )
 	}
 	//qtranxf_dbg_log('qwpseo_sitemap_index: $sm: ', $sm);
 	return $sm;
-}
+} //*/
 
 /*
- * Adds other language sitemaps.
+ * Adds other language sitemaps to the sitemap_index.xml
+ * @since 1.0.3
+*/
 function qwpseo_sitemap_index( $sm )
 {
 	global $q_config, $wpseo_sitemaps;
-	if(isset($q_config['sitemap-type'])) return;
+	if(isset($q_config['sitemap-type'])){
+		return;
+	}
 	//qtranxf_dbg_log('qwpseo_sitemap_index: $wpseo_sitemaps: ', $wpseo_sitemaps);
 	ob_start();
 	$wpseo_sitemaps->output();
@@ -137,7 +141,6 @@ function qwpseo_sitemap_index( $sm )
 	//qtranxf_dbg_log('qwpseo_sitemap_index: $sm: ', $sm);
 	return $sm;
 }
-*/
 add_filter( 'wpseo_sitemap_index', 'qwpseo_sitemap_index');
 
 /**
@@ -165,24 +168,82 @@ add_filter( 'wpseo_enable_xml_sitemap_transient_caching', 'qwpseo_enable_xml_sit
 */
 function qwpseo_build_sitemap_post_type( $type )
 {
-	global $q_config;
-	//$lang = $q_config['language'];
-	if($type == 'i18n-index'){
-		$q_config['sitemap-type'] = $type;
-		return 1;//root map for single language
-	}
 	//qtranxf_dbg_log('qwpseo_build_sitemap_post_type: $type: ', $type);
-	//$matches = array();
-	//if(preg_match('!([^-]+)-([^-]+)!',$type,$matches)){
-	//	//qtranxf_dbg_log('qwpseo_build_sitemap_post_type: $matches: ', $matches);
-	//	$q_config['language'] = $matches[1];
-	//	$type = $matches[2];
-	//}
+	switch($type){
+		case 'i18n-index':
+			global $q_config;
+			//root map for single language
+			$q_config['sitemap-type'] = $type;
+			return '1';
+		//case '1': return $type;
+	}
 	return $type;
 }
 add_filter( 'wpseo_build_sitemap_post_type', 'qwpseo_build_sitemap_post_type', 5);
 
+/**
+ * Change XLS stylesheet URL.
+ * @since 1.1
+*/
+function qwpseo_stylesheet_url( $stylesheet )
+{
+	if(isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'],'sitemap_index.xml') !== false){
+		$pefix = 'index-';
+	}else{
+		$pefix = 'qwpseo-';
+	}
+	$stylesheet = str_replace('main-', $pefix, $stylesheet);
+	return $stylesheet;
+}
+add_filter('wpseo_stylesheet_url', 'qwpseo_stylesheet_url');
+
+function qwpseo_xsl_i18n_callback($buffer)
+{
+	//qtranxf_dbg_log('qwpseo_xsl_i18n_callback: $_SERVER[REQUEST_URI]: ', $_SERVER['REQUEST_URI']);
+	if(isset($_SERVER['HTTP_REFERER'])){
+		//qtranxf_dbg_log('qwpseo_xsl_i18n_callback: $_SERVER[HTTP_REFERER]: ', $_SERVER['HTTP_REFERER']);
+		if(strpos($_SERVER['HTTP_REFERER'],'i18n-index-sitemap') !== false){
+			$buffer = str_replace('sitemap_index.xml', 'i18n-index-sitemap.xml', $buffer);
+		}
+		if(strpos($_SERVER['HTTP_REFERER'],'sitemap_index.xml') !== false ){
+			$buffer = str_replace(', this is an XML Sitemap', ', this is an XML Sitemap of multilingual content', $buffer);
+		}else{
+			global $q_config;
+			$lang = $q_config['language'];
+			$buffer = str_replace(', this is an XML Sitemap', ', this is an XML Sitemap of "'.$q_config['language_name'][$lang].'" content', $buffer);
+		}
+	}
+  $buffer = str_replace(', this is an XML Sitemap', ' and <a href="https://wordpress.org/plugins/wp-seo-qtranslate-x/">qTranslate&#8209;X</a><xsl:text> </xsl:text><a href="https://qtranslatexteam.wordpress.com/about/">Team</a>, this is an XML Sitemap', $buffer);
+	$buffer = str_replace('</a> <a ', '</a><xsl:text> </xsl:text><a ', $buffer);
+	return $buffer;
+}
+
+/**
+ * Output 'qwpseo-sitemap.xsl' based on the output of function 'xsl_output' in /wp-content/plugins/wordpress-seo/inc/class-sitemaps.php.
+ * @since 1.1
+*/
+function qwpseo_xsl_i18n()
+{
+	global $wpseo_sitemaps;
+	ob_start('qwpseo_xsl_i18n_callback');
+	$wpseo_sitemaps->xsl_output('main');
+	ob_end_flush();
+}
+add_action('wpseo_xsl_qwpseo', 'qwpseo_xsl_i18n', 20);
+add_action('wpseo_xsl_index', 'qwpseo_xsl_i18n', 20);
+
 /*
+function qwpseo_register_xsl_i18n()
+{
+	//qtranxf_dbg_log('qwpseo_register_xsl_i18n:');
+	//qtranxf_dbg_log('qwpseo_register_xsl_i18n: $_SERVER[HTTP_REFERER]: ', $_SERVER['HTTP_REFERER']);
+	global $wpseo_sitemaps;
+	$wpseo_sitemaps->register_xsl('i18n','qwpseo_xsl_i18n',true);
+}
+//add_action('init', 'qwpseo_register_xsl_i18n', 30);
+
+$wpseo_sitemaps->set_stylesheet('');
+
 function qwpseo_sitemap_entry( $url, $post_type, $p )
 {
 	//qtranxf_dbg_log('qwpseo_sitemap_entry: $post_type: '.$post_type.'; $url: ', $url);
@@ -218,4 +279,6 @@ add_filter( 'wpseo_title', 'qwpseo_test_filter');
 add_filter( 'wpseo_meta', 'qwpseo_test_filter');
 add_filter( 'wpseo_metadesc', 'qwpseo_test_filter');
 add_filter( 'wpseo_replacements', 'qwpseo_test_filter');
+
+// "js-exec":{"wp-seo-post-exec":{"src":"./js/post-exec.min.js"}}
 */
