@@ -124,11 +124,11 @@ function qwpseo_xmlsitemaps_config()
 		$rb .= 'Sitemap: '.$u.PHP_EOL;
 	}
 	echo '</ul><br />'.PHP_EOL;
-	printf(__('It is advisable to append the site\'s "%s" with the following entries'),'/robots.txt');
+	printf(__('It is advisable to append the site\'s "%s" with the list of index sitemaps separated by language'),'/robots.txt');
 	$nmaps = count($q_config['enabled_languages'])+1;
 	echo '<br /><textarea class="widefat" rows="'.$nmaps.'" name="robots-sitemaps" readonly="readonly">'.$rb.'</textarea>'.PHP_EOL;
 	//echo '<pre>'.$rb.'</pre>'.PHP_EOL;
-	echo '<br />or with this single entry<br /><textarea class="widefat" rows="2" name="robots-sitemap" readonly="readonly">Sitemap: '.$sitemap_index_url.'</textarea>'.PHP_EOL;
+	echo '<br />or with this single entry of flat multilingual index sitemap<br /><textarea class="widefat" rows="2" name="robots-sitemap" readonly="readonly">Sitemap: '.$sitemap_index_url.'</textarea>'.PHP_EOL;
 	echo '<br />Do not combine two sets together, since they both equally cover all languages in all pages as defined by Yoast configuration.';
 	echo '</p>'.PHP_EOL;
 }
