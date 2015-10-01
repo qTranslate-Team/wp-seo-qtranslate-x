@@ -37,9 +37,19 @@ Plugin does not have any configuration options, and no screenshots needed.
 
 Plugin does not have any configuration options, simply activate it and it will enable the translation of relevant fields for Yoast SEO back- and front-end.
 
-= Something does not work right, is me? =
+= Why "Page Analysis" are disabled? =
 
-Review "Known Issues" 
+Yoast SEO "Page Analysis" is not yet integrated and is mostly disabled to prevent confusions. It is only experimentally enabled in Single Language Editor Mode, which can be set on "Advanced" tab of "Languages" configuration page, `/wp-admin/options-general.php?page=qtranslate-x#advanced`.
+
+If you have time and resources, please feel free to submit pool request to the plugin [repository at GitHub](https://github.com/qTranslate-Team/wp-seo-qtranslate-x/pulls) with the implementation of "Page Analysis" for other editor modes. Unfortunately, it may not be possible without asking Yoast to put a few additional filters within "Yoast SEO" plugin code.
+
+= Sitemaps suddenly stopped working showing 404 page? =
+
+Most likely you deactivated "Yoast SEO" plugin and then activated it again. When XML Sitemaps are enabled on Yoast "XML Sitemaps" configuration page `/wp-admin/admin.php?page=wpseo_xml` and Yoast plugin is deactivated, it clears rewrite rules needed for sitemap to function. On next activation of Yoast plugin, sitemaps no longer function until their functionality is deactivated and then activated again on Yoast configuration page "XML Sitemaps".
+
+= Something does not work right, is it me? =
+
+Please, review section "[Known Issues](https://wordpress.org/plugins/wp-seo-qtranslate-x/other_notes/)".
 
 == Upgrade Notice ==
 

@@ -189,48 +189,70 @@ function qwpseo_stylesheet_url( $stylesheet )
 {
 	if(isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'],'sitemap_index.xml') !== false){
 		$pefix = 'index-';
+	}elseif(isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'],'i18n-index-sitemap') !== false){
+		$pefix = 'qtx-';
 	}else{
-		$pefix = 'qwpseo-';
+		$pefix = 'qwp-';
 	}
 	$stylesheet = str_replace('main-', $pefix, $stylesheet);
 	return $stylesheet;
 }
 add_filter('wpseo_stylesheet_url', 'qwpseo_stylesheet_url');
 
-function qwpseo_xsl_i18n_callback($buffer)
+function qwpseo_xsl_heading($buffer)
 {
-	//qtranxf_dbg_log('qwpseo_xsl_i18n_callback: $_SERVER[REQUEST_URI]: ', $_SERVER['REQUEST_URI']);
-	if(isset($_SERVER['HTTP_REFERER'])){
-		//qtranxf_dbg_log('qwpseo_xsl_i18n_callback: $_SERVER[HTTP_REFERER]: ', $_SERVER['HTTP_REFERER']);
-		if(strpos($_SERVER['HTTP_REFERER'],'i18n-index-sitemap') !== false){
-			$buffer = str_replace('sitemap_index.xml', 'i18n-index-sitemap.xml', $buffer);
-		}
-		if(strpos($_SERVER['HTTP_REFERER'],'sitemap_index.xml') !== false ){
-			$buffer = str_replace(', this is an XML Sitemap', ', this is an XML Sitemap of multilingual content', $buffer);
-		}else{
-			global $q_config;
-			$lang = $q_config['language'];
-			$buffer = str_replace(', this is an XML Sitemap', ', this is an XML Sitemap of "'.$q_config['language_name'][$lang].'" content', $buffer);
-		}
-	}
   $buffer = str_replace(', this is an XML Sitemap', ' and <a href="https://wordpress.org/plugins/wp-seo-qtranslate-x/">qTranslate&#8209;X</a><xsl:text> </xsl:text><a href="https://qtranslatexteam.wordpress.com/about/">Team</a>, this is an XML Sitemap', $buffer);
 	$buffer = str_replace('</a> <a ', '</a><xsl:text> </xsl:text><a ', $buffer);
 	return $buffer;
+}
+
+function qwpseo_xsl_language($buffer)
+{
+	global $q_config;
+	$lang = $q_config['language'];
+	$buffer = str_replace(', this is an XML Sitemap', ', this is an XML Sitemap of "'.$q_config['language_name'][$lang].'" content', $buffer);
+	return $buffer;
+}
+
+function qwpseo_xsl_callback_idx($buffer)
+{
+	$buffer = str_replace(', this is an XML Sitemap', ', this is an XML Sitemap of multilingual content', $buffer);
+	return qwpseo_xsl_heading($buffer);
+}
+
+function qwpseo_xsl_callback_qwp($buffer)
+{
+	$buffer = qwpseo_xsl_language($buffer);
+	return qwpseo_xsl_heading($buffer);
+}
+
+function qwpseo_xsl_callback_qtx($buffer)
+{
+	$buffer = str_replace('sitemap_index.xml', 'i18n-index-sitemap.xml', $buffer);
+	$buffer = qwpseo_xsl_language($buffer);
+	return qwpseo_xsl_heading($buffer);
 }
 
 /**
  * Output 'qwpseo-sitemap.xsl' based on the output of function 'xsl_output' in /wp-content/plugins/wordpress-seo/inc/class-sitemaps.php.
  * @since 1.1
 */
-function qwpseo_xsl_i18n()
+function qwpseo_xsl_i18n($callback)
 {
 	global $wpseo_sitemaps;
-	ob_start('qwpseo_xsl_i18n_callback');
+	ob_start($callback);
 	$wpseo_sitemaps->xsl_output('main');
 	ob_end_flush();
 }
-add_action('wpseo_xsl_qwpseo', 'qwpseo_xsl_i18n', 20);
-add_action('wpseo_xsl_index', 'qwpseo_xsl_i18n', 20);
+
+function qwpseo_xsl_idx($callback){ qwpseo_xsl_i18n('qwpseo_xsl_callback_idx'); }
+add_action('wpseo_xsl_index', 'qwpseo_xsl_idx', 20);
+
+function qwpseo_xsl_qwp($callback){ qwpseo_xsl_i18n('qwpseo_xsl_callback_qwp'); }
+add_action('wpseo_xsl_qwp', 'qwpseo_xsl_qwp', 20);
+
+function qwpseo_xsl_qtx($callback){ qwpseo_xsl_i18n('qwpseo_xsl_callback_qtx'); }
+add_action('wpseo_xsl_qtx', 'qwpseo_xsl_qtx', 20);
 
 /*
 function qwpseo_register_xsl_i18n()
