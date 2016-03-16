@@ -35,7 +35,7 @@ Plugin does not have any configuration options, and no screenshots needed.
 
 ## Frequently Asked Questions ##
 
-### How do I open a page with configuration options? ### 
+### How do I open a page with configuration options? ###
 
 Plugin does not have any configuration options, simply activate it and it will enable the translation of relevant fields for Yoast SEO back- and front-end.
 
