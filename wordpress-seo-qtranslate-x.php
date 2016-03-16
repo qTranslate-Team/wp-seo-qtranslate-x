@@ -1,20 +1,20 @@
 <?php
 /**
- * Plugin Name: Yoast SEO & qTranslate-X
+ * Plugin Name: Integration: Yoast SEO & qTranslate-X
  * Plugin URI: https://wordpress.org/plugins/wp-seo-qtranslate-x/
  * Description: Enables multilingual framework for plugin "Yoast SEO".
- * Version: 1.1
+ * Version: 1.1.1
  * Author: qTranslate Team
  * Author URI: http://qtranslatexteam.wordpress.com/about
  * License: GPL2
- * Tags: multilingual, multi, language, translation, qTranslate-X, Yoast SEO
+ * Tags: multilingual, multi, language, translation, qTranslate-X, Yoast SEO, Integration
  * Author e-mail: qTranslateTeam@gmail.com
  * GitHub Plugin URI: https://github.com/qTranslate-Team/wp-seo-qtranslate-x/
  * GitHub Branch: master
  */
 if(!defined('ABSPATH'))exit;
 
-define('QWPSEO_VERSION','1.1');
+define('QWPSEO_VERSION','1.1.1');
 
 function qwpseo_init_language($url_info)
 {
