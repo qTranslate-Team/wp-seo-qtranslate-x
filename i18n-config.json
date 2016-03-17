@@ -7,8 +7,11 @@
 			"fields":{
 				"yoast_wpseo_title":{},
 				"yoast_wpseo_focuskw":{},
+				"yoast_wpseo_focuskw_text_input":{},
 				"yoast_wpseo_metadesc":{"encode":"{"},
 				"yoast_wpseo_metakeywords":{},
+				"snippet_title":{"encode":"display"},
+				"snippet_meta":{"encode":"display"},
 				"wpseosnippet_title":{"encode":"display"}
 			}
 		}

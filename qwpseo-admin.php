@@ -1,7 +1,7 @@
 <?php
 if(!defined('ABSPATH'))exit;
 
-/* moved to i18n-config.xml 
+/* moved to i18n-config.json
 add_filter('qtranslate_load_admin_page_config','qwpseo_add_admin_page_config');//obsolete
 //add_filter('i18n_admin_config','qwpseo_add_admin_page_config');// should be used instead
 function qwpseo_add_admin_page_config($page_configs)
