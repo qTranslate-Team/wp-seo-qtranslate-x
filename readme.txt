@@ -56,7 +56,7 @@ Please, review section "[Known Issues](https://wordpress.org/plugins/wp-seo-qtra
 ## Upgrade Notice ##
 
 ### 1.1.1 ###
-* Change of plugin name "Yoast SEO & qTranslate-X" to "Integration: Yoast SEO & qTranslate-X" to satisfy [WordPress trademark guideline #17](https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guidelines/): no plugin name should start with other plugin name.
+* Change of plugin name "Yoast SEO & qTranslate-X" to "Integration: Yoast SEO & qTranslate-X" to satisfy [WordPress trademark guideline #17](https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guidelines/): no plugin name should start with other plugin name. Sorry, there is no any functionality-wise improvement.
 
 ## Changelog ##
 
