@@ -1,63 +1,66 @@
 <?php
 if(!defined('ABSPATH'))exit;
 
-/* moved to i18n-config.json
-add_filter('qtranslate_load_admin_page_config','qwpseo_add_admin_page_config');//obsolete
-//add_filter('i18n_admin_config','qwpseo_add_admin_page_config');// should be used instead
+add_filter('i18n_admin_config','qwpseo_add_admin_page_config');
 function qwpseo_add_admin_page_config($page_configs)
 {
-	{
-	$page_config = array();
-	$page_config['pages'] = array( 'post.php' => '' );
-	//$page_config['anchors'] = array( 'titlediv' );
+	if(!isset($page_configs['yoast_wpseo'])) $page_configs['yoast_wpseo'] = array();
+	$page_config = &$page_configs['yoast_wpseo'];
+	if(!isset($page_config['pages']))
+		$page_config['pages'] = array( 'post.php' => '', 'post-new.php' => '', 'term.php' => '', 'edit-tags.php' => 'action=edit' );
 
-	$page_config['forms'] = array();
+	$page_config['js-exec'] = array();
+	$js = &$page_config['js-exec']; // shorthand
 
-	$f = array();
-	$f['fields'] = array();
-	$fields = &$f['fields']; // shorthand
+	$dir = qtranxf_dir_from_wp_content(__FILE__);
 
-	$fields['yoast_wpseo_title'] = array();
-	$fields['yoast_wpseo_focuskw'] = array();
-	$fields['yoast_wpseo_metadesc'] = array('encode' => '{' );
-	$fields['yoast_wpseo_metakeywords'] = array();
-	$fields['wpseosnippet_title'] = array('encode' => 'display' );
-
-	$page_config['forms']['post'] = $f;
-	$page_configs[] = $page_config;
+	global $pagenow;
+	switch($pagenow){
+		case 'term.php':
+			$js[] = array( 'handle' =>'qwpseo-prep', 'src' => $dir.'/js/qwpseo-prep.min.js', 'ver' => QWPSEO_VERSION, 'deps' => array('qtranslate-admin-common'));
+			$deps[] = 'yoast-seo-term-scraper';
+			break;
+		case 'post-new.php':
+		case 'post.php':
+			$deps[] = 'yoast-seo-post-scraper';
+			break;
+		default: $deps = array(); break;
 	}
 
-	{
-	$page_config = array();
-	$page_config['pages'] = array( 'edit-tags.php' => 'action=edit' );
+	if(!empty($deps)){
+		$js[] = array( 'handle' =>'qwpseo-exec', 'src' => $dir.'/js/qwpseo-exec.min.js', 'ver' => QWPSEO_VERSION, 'deps' => $deps);
+	}
 
-	$page_config['forms'] = array();
+	if(empty($page_config['forms'])) $page_config['forms'] = array();
+	if(empty($page_config['forms']['document'])) $page_config['forms']['document'] = array();
+	if(empty($page_config['forms']['document']['fields'])) $page_config['forms']['document']['fields'] = array();
+	$fields = &$page_config['forms']['document']['fields']; // shorthand
 
-	$f = array();
-	$f['fields'] = array();
-	$fields = &$f['fields']; // shorthand
+	$code = array( 'encode' => '{' );
+	$ids = qwpseo_get_meta_keys();
+	foreach($ids as $id){
+		//they keeps changing the HTML ids, so, set all values used so far
+		$fields[$id] = $code;
+		$fields['yoast_'.$id] = $code;
+		$fields['hidden_'.$id] = $code;
 
-	$fields['wpseo_title'] = array();
-	$fields['wpseo_desc'] = array();
-	$fields['wpseo_metakey'] = array();
-	$fields['wpseo_canonical'] = array();
-
-	$page_config['forms']['edittag'] = $f;
-	$page_configs[] = $page_config;
+		add_filter( 'wpseo_sanitize_tax_meta_'.$id, 'qwpseo_sanitize_tax_meta', 5, 3);
 	}
 
 	return $page_configs;
 }
-*/
 
-function qwpseo_admin_filters()
-{
+function qwpseo_admin_filters(){
 	global $pagenow, $q_config;
 	switch($pagenow){
 		case 'edit.php':
-			add_filter( 'wpseo_title', 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage');
-			add_filter( 'wpseo_meta', 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage');
-			add_filter( 'wpseo_metadesc', 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage');
+			$ids = qwpseo_get_meta_keys();
+			foreach($ids as $id){
+				add_filter( $id, 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage');
+				//add_filter( 'wpseo_title', 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage');
+				//add_filter( 'wpseo_meta', 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage');
+				//add_filter( 'wpseo_metadesc', 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage');
+			}
 		break;
 		case 'post.php':
 		case 'post-new.php':
@@ -69,14 +72,59 @@ function qwpseo_admin_filters()
 			//to prevent the effect of 'strip_tags' in function 'retrieve_sitename' in '/wp-content/plugins/wordpress-seo/inc/class-wpseo-replace-vars.php'
 			add_filter( 'option_blogname', 'qwpseo_encode_swirly');
 			add_filter( 'option_blogdescription', 'qwpseo_encode_swirly');
-
-			//to make "Page Analysis" work in Single Language Mode
-			add_filter( 'wpseo_pre_analysis_post_content', 'qtranxf_useCurrentLanguageIfNotFoundShowEmpty');
+			if( defined('WPSEO_VERSION') && intval(substr(WPSEO_VERSION,0,1)) < 3 ) {
+				//to make "Page Analysis" work in Single Language Mode
+				add_filter( 'wpseo_pre_analysis_post_content', 'qtranxf_useCurrentLanguageIfNotFoundShowEmpty');
+			}
 		break;
 	}
+
+	add_action( 'admin_init', 'qwpseo_script_deps', 99 );
 }
 qwpseo_admin_filters();
 
+/**
+ * Modifies dependencies of the Yoast scripts.
+ * @return void
+ */
+function qwpseo_script_deps(){
+	global $pagenow;
+	switch($pagenow){
+		case 'edit-tags.php':
+		case 'term.php':
+			$handles = array('term-scraper' => 'qwpseo-prep');
+			break;
+		case 'post.php':
+		case 'post-new.php':
+			$handles = array('post-scraper' => 'qtranslate-admin-common');
+			break;
+		default: return;
+	}
+
+	$scripts = wp_scripts();
+	$registered = $scripts->registered;
+
+	//$handles = array('post-scraper', 'term-scraper', 'replacevar-plugin', 'admin-global-script', 'metabox');
+	//$handles = array('term-scraper');
+	foreach($handles as $handle => $dep){
+		$key = WPSEO_Admin_Asset_Manager::PREFIX.$handle;
+		if(!isset($registered[$key]))
+			continue;
+		$r = &$registered[$key];
+		if(!isset($r->deps))
+			$r->deps = array();
+		$r->deps[] = $dep;
+	}
+}
+
+/**
+ * Very ugly hack to workaround. Fortunately this problem is gone after some deprecation in 3.0
+ * @param mixed $original_value 
+ * @param mixed $object_id 
+ * @param mixed $meta_key 
+ * @param mixed $single 
+ * @return mixed
+ */
 function qwpseo_get_post_metadata($original_value, $object_id, $meta_key = '', $single = false)
 {
 	global $q_config;
@@ -144,6 +192,31 @@ function qwpseo_encode_swirly($value)
 	$value = preg_replace('#\[:([a-z]{2}|)\]#i','{:$1}',$value);
 	return $value;
 }
+
+/**
+ * Workaround for "filter_input( INPUT_POST, $key )" in function update_term(...) in /plugins/wordpress-seo/admin/taxonomy/class-taxonomy.php.
+ * Function 'filter_input' does not read $_POST and there seem to be no way to alter values provided by INPUT_POST.
+ * @param mixed $key 
+ * @param mixed $value 
+ * @param mixed $value_posted 
+ * @param mixed $value_old 
+ * @return mixed
+ */
+function qwpseo_parse_value_posted($key, $value, $value_posted=null, $value_old=null)
+{
+	if(empty($_POST[$key]) || !qtranxf_isMultilingual($_POST[$key]) || !class_exists('WPSEO_Utils'))
+		return $value;
+	$v = WPSEO_Utils::sanitize_text_field( stripslashes( $_POST[$key] ) );
+	return $v;
+}
+
+function qwpseo_sanitize_tax_meta($value, $value_posted=null, $value_old=null)
+{
+	$key = current_filter();
+	$key = substr($key,24);
+	return qwpseo_parse_value_posted($key, $value, $value_posted, $value_old);
+}
+//add_filter( 'wpseo_sanitize_tax_meta_' . $key, $clean[ $key ], ( isset( $meta_data[ $key ] ) ? $meta_data[ $key ] : null ), ( isset( $old_meta[ $key ] ) ? $old_meta[ $key ] : null ) );
 
 /*
 function qwpseo_manage_custom_column($column)

@@ -3,7 +3,7 @@
  * Plugin Name: Integration: Yoast SEO & qTranslate-X
  * Plugin URI: https://wordpress.org/plugins/wp-seo-qtranslate-x/
  * Description: Enables multilingual framework for plugin "Yoast SEO".
- * Version: 1.1.1
+ * Version: 1.2
  * Author: qTranslate Team
  * Author URI: http://qtranslatexteam.wordpress.com/about
  * License: GPL2
@@ -14,26 +14,61 @@
  */
 if(!defined('ABSPATH'))exit;
 
-define('QWPSEO_VERSION','1.1.1');
+define('QWPSEO_VERSION','1.2');
 
 function qwpseo_init_language($url_info)
 {
+	if(!defined('WPSEO_VERSION'))
+		return;
 	global $q_config;
 	if($url_info['doing_front_end']) {
-		add_filter( 'wpseo_use_page_analysis', 'qwpseo_no_page_analysis' );
 		require_once(dirname(__FILE__)."/qwpseo-front.php");
 	}else{
-		if($q_config['editor_mode'] != QTX_EDITOR_MODE_SINGLGE){
-			//Disable "Page Analysis" unless Single Language Editor Mode is in use.
-			add_filter( 'wpseo_use_page_analysis', 'qwpseo_no_page_analysis' );
-		}
 		require_once(dirname(__FILE__)."/qwpseo-admin.php");
 	}
 }
 add_action('qtranslate_init_language','qwpseo_init_language');
 
-/**
- * Disable "Page Analysis".
+/*
+class WPSEO_Taxonomy_Meta
+	public static $defaults_per_term = array(
+		'wpseo_title'           => '',
+		'wpseo_desc'            => '',
+		'wpseo_metakey'         => '',
+		'wpseo_canonical'       => '',
+		'wpseo_bctitle'         => '',
+		'wpseo_noindex'         => 'default',
+		'wpseo_sitemap_include' => '-',
+		'wpseo_focuskw'         => '',
+		'wpseo_linkdex'         => '',
+
+		// Social fields.
+		'wpseo_opengraph-title'         => '',
+		'wpseo_opengraph-description'   => '',
+		'wpseo_opengraph-image'         => '',
+		'wpseo_twitter-title'           => '',
+		'wpseo_twitter-description'     => '',
+		'wpseo_twitter-image'           => '',
+	);
 */
-function qwpseo_no_page_analysis($a){ return false; }
-//add_filter( 'wpseo_use_page_analysis', 'qwpseo_no_page_analysis' );
+function qwpseo_get_meta_keys(){
+	return array(
+		'wpseo_title',
+		'wpseo_desc',
+		'wpseo_metakey',
+		'wpseo_canonical',
+		'wpseo_bctitle',
+		//'wpseo_noindex',
+		'wpseo_focuskw',
+		//'wpseo_sitemap_include',
+		//'wpseo_linkdex',
+
+		// Social fields.
+		'wpseo_opengraph-title',
+		'wpseo_opengraph-description',
+		//'wpseo_opengraph-image',
+		'wpseo_twitter-title',
+		'wpseo_twitter-description',
+		//'wpseo_twitter-image',
+	);
+}

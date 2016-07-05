@@ -1,6 +1,16 @@
 <?php
 if(!defined('ABSPATH'))exit;
 
+add_filter('i18n_front_config','qwpseo_add_front_page_config');
+function qwpseo_add_front_page_config($page_configs)
+{
+	$ids = qwpseo_get_meta_keys();
+	foreach($ids as $id){
+		add_filter( $id, 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage', 20 );
+	}
+	return $page_configs;
+}
+
 /* moved to i18n-config.json
 function qwpseo_add_filters_front() {
 	$use_filters = array(
@@ -301,6 +311,4 @@ add_filter( 'wpseo_title', 'qwpseo_test_filter');
 add_filter( 'wpseo_meta', 'qwpseo_test_filter');
 add_filter( 'wpseo_metadesc', 'qwpseo_test_filter');
 add_filter( 'wpseo_replacements', 'qwpseo_test_filter');
-
-// "js-exec":{"wp-seo-post-exec":{"src":"./js/post-exec.min.js"}}
 */
