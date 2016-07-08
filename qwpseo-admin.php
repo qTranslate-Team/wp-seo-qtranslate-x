@@ -61,6 +61,7 @@ function qwpseo_admin_filters(){
 				//add_filter( 'wpseo_meta', 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage');
 				//add_filter( 'wpseo_metadesc', 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage');
 			}
+			//todo add_filter( "get_post_metadata", 'qwpseo_get_metadata_post', 5, 4);
 		break;
 		case 'post.php':
 		case 'post-new.php':
@@ -79,7 +80,18 @@ function qwpseo_admin_filters(){
 		break;
 	}
 
-	add_action( 'admin_init', 'qwpseo_script_deps', 99 );
+	if(defined('DOING_AJAX')){
+		require_once(dirname(__FILE__).'/qwpseo-activation.php');
+		add_action('wp_ajax_qwpseo_meta_fix', 'qwpseo_ajax_meta_fix');
+	}else{
+		$n = get_option('qwpseo_meta_fix');
+		if(!is_numeric($n) || $n > 0){
+			require_once(dirname(__FILE__).'/qwpseo-activation.php');
+			qwpseo_meta_check();
+		}
+
+		add_action( 'admin_init', 'qwpseo_script_deps', 99 );
+	}
 }
 qwpseo_admin_filters();
 
@@ -196,7 +208,7 @@ function qwpseo_encode_swirly($value)
 /**
  * Workaround for "filter_input( INPUT_POST, $key )" in function update_term(...) in /plugins/wordpress-seo/admin/taxonomy/class-taxonomy.php.
  * Function 'filter_input' does not read $_POST and there seem to be no way to alter values provided by INPUT_POST.
- * @param mixed $key 
+ * @param string $key 
  * @param mixed $value 
  * @param mixed $value_posted 
  * @param mixed $value_old 
@@ -210,24 +222,77 @@ function qwpseo_parse_value_posted($key, $value, $value_posted=null, $value_old=
 	return $v;
 }
 
+/**
+ * Response to
+ * apply_filters( 'wpseo_sanitize_tax_meta_' . $key, $clean[ $key ], ( isset( $meta_data[ $key ] ) ? $meta_data[ $key ] : null ), ( isset( $old_meta[ $key ] ) ? $old_meta[ $key ] : null ) );
+ * @param mixed $value 
+ * @param mixed $value_posted 
+ * @param mixed $value_old 
+ * @return mixed
+ */
 function qwpseo_sanitize_tax_meta($value, $value_posted=null, $value_old=null)
 {
 	$key = current_filter();
 	$key = substr($key,24);
 	return qwpseo_parse_value_posted($key, $value, $value_posted, $value_old);
 }
-//add_filter( 'wpseo_sanitize_tax_meta_' . $key, $clean[ $key ], ( isset( $meta_data[ $key ] ) ? $meta_data[ $key ] : null ), ( isset( $old_meta[ $key ] ) ? $old_meta[ $key ] : null ) );
 
-/*
-function qwpseo_manage_custom_column($column)
-{
-	switch($column){
-		case 'SEO Title':
-		case 'Meta Desc.':
-		case 'Focus KW':
-		default: break;
+/**
+ * Response to 
+ * $check = apply_filters( "get_{$meta_type}_metadata", null, $object_id, $meta_key, $single );
+ * @param mixed $value 
+ * @param mixed $object_id 
+ * @param mixed $meta_key 
+ * @param mixed $single 
+ * @return mixed
+ */
+function qwpseo_get_metadata_post($value, $object_id, $meta_key, $single){
+	$meta_type = 'post';
+	//code from function get_metadata in /wp-includes/meta.php
+
+	$meta_cache = wp_cache_get($object_id, $meta_type . '_meta');
+
+	if ( !$meta_cache ) {
+		$meta_cache = update_meta_cache( $meta_type, array( $object_id ) );
+		$meta_cache = $meta_cache[$object_id];
 	}
+
+	$mlcache = array();
+	if ( !isset($mlcache[$object_id]) ) {
+		$mlcache[$object_id] = array();
+		$cache = &$mlcache[$object_id];
+		$lang = qtranxf_getLanguage();
+		foreach($meta_cache as $key => $values){
+			foreach($values as $i => $value){
+				if(qtranxf_isMultilingual($value)){
+					if(is_serialized($value)){
+						$mlv = unserialize($value);
+						$v = qtranxf_use($lang, $mlv, false, false);
+						$value = serialize($v);
+					}else{
+						$value = qtranxf_use_language($lang, $value, false, false);
+					}
+					$values[$i] = $value;
+				}
+			}
+			$cache[$key] = $values;
+		}
+		$meta_cache = $cache;
+	}
+
+	if ( ! $meta_key ) {
+		return $meta_cache;
+	}
+
+	if ( isset($meta_cache[$meta_key]) ) {
+		if ( $single )
+			return maybe_unserialize( $meta_cache[$meta_key][0] );
+		else
+			return array_map('maybe_unserialize', $meta_cache[$meta_key]);
+	}
+
+	if ($single)
+		return '';
+	else
+		return array();
 }
-add_filter('manage_posts_custom_column', 'qwpseo_manage_custom_column');
-add_filter('manage_pages_custom_column', 'qwpseo_manage_custom_column');
-*/

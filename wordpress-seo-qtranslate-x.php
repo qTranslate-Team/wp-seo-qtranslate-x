@@ -22,12 +22,18 @@ function qwpseo_init_language($url_info)
 		return;
 	global $q_config;
 	if($url_info['doing_front_end']) {
-		require_once(dirname(__FILE__)."/qwpseo-front.php");
+		require_once(dirname(__FILE__).'/qwpseo-front.php');
 	}else{
-		require_once(dirname(__FILE__)."/qwpseo-admin.php");
+		require_once(dirname(__FILE__).'/qwpseo-admin.php');
 	}
 }
-add_action('qtranslate_init_language','qwpseo_init_language');
+add_action('qtranslate_init_language', 'qwpseo_init_language');
+
+if(is_admin() && !defined('DOING_AJAX')){
+	require_once(dirname(__FILE__).'/qwpseo-activation.php');
+	$file = wp_normalize_path(__FILE__);
+	register_activation_hook($file, 'qwpseo_activation_hook');
+}
 
 /*
 class WPSEO_Taxonomy_Meta
