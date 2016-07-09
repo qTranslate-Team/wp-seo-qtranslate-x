@@ -80,18 +80,13 @@ function qwpseo_admin_filters(){
 		break;
 	}
 
-	if(defined('DOING_AJAX')){
-		require_once(dirname(__FILE__).'/qwpseo-activation.php');
-		add_action('wp_ajax_qwpseo_meta_fix', 'qwpseo_ajax_meta_fix');
-	}else{
-		$n = get_option('qwpseo_meta_fix');
-		if(!is_numeric($n) || $n > 0){
-			require_once(dirname(__FILE__).'/qwpseo-activation.php');
-			qwpseo_meta_check();
-		}
-
 		add_action( 'admin_init', 'qwpseo_script_deps', 99 );
 	}
+
+	//add_action( 'admin_init', 'qwpseo_clean_post_data');
+
+	if(isset($_POST['yoast_wpseo_focuskw_text_input']))
+		unset($_POST['yoast_wpseo_focuskw_text_input']); // this causes creation a ghost db entry in wp_postmeta with meta_key '_yoast_wpseo_focuskw_text_input', while the wanted value is stored in '_yoast_wpseo_focuskw'
 }
 qwpseo_admin_filters();
 
