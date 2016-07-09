@@ -9,12 +9,16 @@ function qwpseo_add_admin_page_config($page_configs)
 	if(!isset($page_config['pages']))
 		$page_config['pages'] = array( 'post.php' => '', 'post-new.php' => '', 'term.php' => '', 'edit-tags.php' => 'action=edit' );
 
+	global $pagenow;
+	if($pagenow == 'term.php'){
+		$page_config['anchors'] = array( 'edittag' => array("where" => "before"), 'poststuff' => array('where' => 'before') );
+	}
+
 	$page_config['js-exec'] = array();
 	$js = &$page_config['js-exec']; // shorthand
 
 	$dir = qtranxf_dir_from_wp_content(__FILE__);
 
-	global $pagenow;
 	switch($pagenow){
 		case 'term.php':
 			$js[] = array( 'handle' =>'qwpseo-prep', 'src' => $dir.'/js/qwpseo-prep.min.js', 'ver' => QWPSEO_VERSION, 'deps' => array('qtranslate-admin-common'));

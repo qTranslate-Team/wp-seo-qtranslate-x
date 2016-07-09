@@ -10,6 +10,12 @@ function($){
 
 	var qtx = qTranslateConfig.js.get_qtx();
 
+	//deal with imperfection of QTranslate Slug
+	if($('#qts_nonce').length){
+		$('#snippet-editor-slug').closest('label').hide();
+	}
+
+	//deal with Yoast
 	var qreplace_vars = {};
 	if(window.wpseoReplaceVarsL10n){
 
