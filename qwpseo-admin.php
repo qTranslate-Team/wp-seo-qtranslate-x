@@ -80,10 +80,7 @@ function qwpseo_admin_filters(){
 		break;
 	}
 
-		add_action( 'admin_init', 'qwpseo_script_deps', 99 );
-	}
-
-	//add_action( 'admin_init', 'qwpseo_clean_post_data');
+	add_action( 'admin_init', 'qwpseo_script_deps', 99 );
 
 	if(isset($_POST['yoast_wpseo_focuskw_text_input']))
 		unset($_POST['yoast_wpseo_focuskw_text_input']); // this causes creation a ghost db entry in wp_postmeta with meta_key '_yoast_wpseo_focuskw_text_input', while the wanted value is stored in '_yoast_wpseo_focuskw'
