@@ -63,6 +63,7 @@ Please, review section "[Known Issues](https://wordpress.org/plugins/wp-seo-qtra
 
 ### 1.2 ###
 * Fix: the functionality after Yoast has re-designed his plugin in version 3.0.
+* Enhancement: Adjustments for [Qtranslate Slug](https://wordpress.org/plugins/qtranslate-slug/).
 
 ### 1.1.1 ###
 * Change of this plugin name "Yoast SEO & qTranslate-X" to "Integration: Yoast SEO & qTranslate-X" to satisfy [WordPress trademark guideline #17](https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guidelines/): no plugin name should start with other plugin name.
