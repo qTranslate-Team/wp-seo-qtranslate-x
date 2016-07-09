@@ -29,12 +29,6 @@ function qwpseo_init_language($url_info)
 }
 add_action('qtranslate_init_language', 'qwpseo_init_language');
 
-if(is_admin() && !defined('DOING_AJAX')){
-	require_once(dirname(__FILE__).'/qwpseo-activation.php');
-	$file = wp_normalize_path(__FILE__);
-	register_activation_hook($file, 'qwpseo_activation_hook');
-}
-
 /*
 class WPSEO_Taxonomy_Meta
 	public static $defaults_per_term = array(

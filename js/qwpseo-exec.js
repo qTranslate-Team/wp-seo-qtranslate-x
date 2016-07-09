@@ -33,7 +33,7 @@ function($){
 		wpseoReplaceVarsL10n.replace_vars = qreplace_vars[qTranslateConfig.activeLanguage];
 	}
 
-	//var focuskw_input = $('#yoast_wpseo_focuskw');
+	var focuskw_input = $('#yoast_wpseo_focuskw');
 	var focuskw_edit = $('#yoast_wpseo_focuskw_text_input');
 	focuskw_edit.addClass('qtranxs-translatable');
 
@@ -73,9 +73,10 @@ function($){
 
 			//app.showLoadingDialog();
 
+			focuskw_edit.val(focuskw_input.val());//temporary unil Yoast notice their error with duplicated entry in db and fix it
 			app.rawData = app.callbacks.getData();
 
-			focuskw_edit.val(app.rawData.keyword);
+			//focuskw_edit.val(app.rawData.keyword);
 			metadesc_edit.val(app.rawData.snippetMeta);
 			title_edit.val(app.rawData.snippetTitle);
 

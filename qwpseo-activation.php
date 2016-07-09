@@ -1,4 +1,21 @@
 <?php
+//if(is_admin() && !defined('DOING_AJAX')){
+//	require_once(dirname(__FILE__).'/qwpseo-activation.php');
+//	$file = wp_normalize_path(__FILE__);
+//	register_activation_hook($file, 'qwpseo_activation_hook');
+//}
+
+//if(defined('DOING_AJAX')){
+//	require_once(dirname(__FILE__).'/qwpseo-activation.php');
+//	add_action('wp_ajax_qwpseo_meta_fix', 'qwpseo_ajax_meta_fix');
+//}else{
+//	$n = get_option('qwpseo_meta_fix');
+//	if(!is_numeric($n) || $n > 0){
+//		require_once(dirname(__FILE__).'/qwpseo-activation.php');
+//		qwpseo_meta_check();
+//	}
+
+/*
 function qwpseo_set_encoding_s($value){
 	if(is_string($value)){
 		$value = preg_replace('/<!--:([a-z]{2})-->/ism', '{:$1}', $value);
@@ -36,10 +53,33 @@ function qwpseo_meta_fix($result){
 		$wpdb->query($q);
 	}
 }
+*/
+
+function qwpseo_meta_fix($result){
+	global $wpdb;
+	$wpdb->show_errors(true); @set_time_limit(0);
+	$query = "UPDATE $wpdb->postmeta SET meta_value = %s WHERE meta_id = %d";
+	//$query_i = "INSERT $wpdb->postmeta SET meta_value = %s WHERE meta_id = %d";
+	foreach($result as $row){
+		$value = $row->meta_value;
+		if(is_serialized($value)){
+			$value = unserialize($value);
+			$value = qwpseo_set_encoding_s($value);
+			$value = serialize($value);
+		}else{//if(is_string($value)){
+			$value = qwpseo_set_encoding_s($value);
+		}
+		if($row->meta_value === $value)
+			continue;
+		$q = $wpdb->prepare($query, $value, $row->meta_id);
+		$wpdb->query($q);
+	}
+}
 
 function qwpseo_meta_check(){
 	global $wpdb;
-	$query = "SELECT * FROM $wpdb->postmeta WHERE meta_key like '_yoast_wpseo%' AND (meta_value like '%[:__]%' OR meta_value like '%[:]%' OR meta_value like '%<--:__-->%' OR meta_value like '%<--:-->%')";
+	//$query = "SELECT * FROM $wpdb->postmeta WHERE meta_key like '_yoast_wpseo%' AND (meta_value like '%[:__]%' OR meta_value like '%[:]%' OR meta_value like '%<--:__-->%' OR meta_value like '%<--:-->%')";
+	$query = "SELECT * FROM $wpdb->postmeta as a WHERE a.meta_key = '_yoast_wpseo_focuskw' AND (NOT EXISTS (SELECT * FROM $wpdb->postmeta as b WHERE b.post_id = a.post_id AND b.meta_key = '_yoast_wpseo_focuskw_text_input' ))";
 	$result = $wpdb->get_results($query);
 	if( is_null($result) || !is_array($result)){
 		delete_option('qwpseo_meta_fix');

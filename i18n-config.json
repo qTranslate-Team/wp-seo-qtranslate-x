@@ -6,9 +6,8 @@
 		"document":{
 			"fields":{
 				"yoast_wpseo_title":{"encode":"{"},
-				"yoast_wpseo_focuskw":{"encode":"{"},
-				"yoast_wpseo_focuskw_text_input":{"encode":"{"},
 				"yoast_wpseo_metadesc":{"encode":"{"},
+				"yoast_wpseo_focuskw":{"encode":"{"},
 				"yoast_wpseo_metakeywords":{},
 				"hidden_wpseo_title":{"encode":"{"},
 				"hidden_wpseo_desc":{"encode":"{"},
