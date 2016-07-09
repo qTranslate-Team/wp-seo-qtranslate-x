@@ -84,8 +84,10 @@ Please, review section "[Known Issues](https://wordpress.org/plugins/wp-seo-qtra
 
 ## Known Issues ##
 
+* Page `/wp-admin/edit.php` shows columns 'Meta Desc.' and 'Focus KW' in [Raw ML format](https://qtranslatexteam.wordpress.com/multilingual-fields/).
 * [plugin Yoast SEO issue] When XML Sitemaps are enabled on Yoast configuration page `/wp-admin/admin.php?page=wpseo_xml` and Yoast plugin is deactivated, it clears rewrite rules needed for sitemap to function. On next activation of Yoast plugin, sitemaps no longer function until their functionality is deactivated and then activated again on Yoast configuration page "XML Sitemaps".
 * [not really an issue] Sitemaps do not work quite right in Query URL Modification Mode. Query Mode is not supposed to be used for SEO.
+
 
 ### Former Known Issues ###
 * [Resolved in version 1.2] Yoast SEO "Page Analysis" is not yet integrated and is mostly disabled to prevent confusions. It is only experimentally enabled in Single Language Editor Mode, which can be set on "Advanced" tab of "Languages" configuration page, `/wp-admin/options-general.php?page=qtranslate-x#advanced`. If you have time and resources, please feel free to submit pool request to the plugin [repository at GitHub](https://github.com/qTranslate-Team/wp-seo-qtranslate-x/pulls) with the implementation of "Page Analysis" for other editor modes. Unfortunately, it may not be possible without asking Yoast to put a few additional filters within ["Yoast SEO" plugin code](https://github.com/Yoast/wordpress-seo).
