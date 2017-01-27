@@ -84,7 +84,7 @@ function qwpseo_admin_filters(){
 		break;
 	}
 
-	add_action( 'admin_init', 'qwpseo_script_deps', 99 );
+	add_action( 'admin_enqueue_scripts', 'qwpseo_script_deps', 99 );
 
 	if(isset($_POST['yoast_wpseo_focuskw_text_input']))
 		unset($_POST['yoast_wpseo_focuskw_text_input']); // this causes creation a ghost db entry in wp_postmeta with meta_key '_yoast_wpseo_focuskw_text_input', while the wanted value is stored in '_yoast_wpseo_focuskw'
@@ -96,7 +96,7 @@ qwpseo_admin_filters();
  * @return void
  */
 function qwpseo_script_deps(){
-	global $pagenow;
+	global $pagenow, $wp_scripts;
 	switch($pagenow){
 		case 'edit-tags.php':
 		case 'term.php':
@@ -109,8 +109,7 @@ function qwpseo_script_deps(){
 		default: return;
 	}
 
-	$scripts = wp_scripts();
-	$registered = $scripts->registered;
+	$registered = $wp_scripts->registered;
 
 	//$handles = array('post-scraper', 'term-scraper', 'replacevar-plugin', 'admin-global-script', 'metabox');
 	//$handles = array('term-scraper');
@@ -118,19 +117,21 @@ function qwpseo_script_deps(){
 		$key = WPSEO_Admin_Asset_Manager::PREFIX.$handle;
 		if(!isset($registered[$key]))
 			continue;
-		$r = &$registered[$key];
-		if(!isset($r->deps))
-			$r->deps = array();
-		$r->deps[] = $dep;
+		if(!isset($registered[$key]->deps))
+            $registered[$key]->deps = array();
+        $registered[$key]->deps[] = $dep;
 	}
+
+    $wp_scripts->registered = $registered;
+
 }
 
 /**
  * Very ugly hack to workaround. Fortunately this problem is gone after some deprecation in 3.0
- * @param mixed $original_value 
- * @param mixed $object_id 
- * @param mixed $meta_key 
- * @param mixed $single 
+ * @param mixed $original_value
+ * @param mixed $object_id
+ * @param mixed $meta_key
+ * @param mixed $single
  * @return mixed
  */
 function qwpseo_get_post_metadata($original_value, $object_id, $meta_key = '', $single = false)
@@ -204,10 +205,10 @@ function qwpseo_encode_swirly($value)
 /**
  * Workaround for "filter_input( INPUT_POST, $key )" in function update_term(...) in /plugins/wordpress-seo/admin/taxonomy/class-taxonomy.php.
  * Function 'filter_input' does not read $_POST and there seem to be no way to alter values provided by INPUT_POST.
- * @param string $key 
- * @param mixed $value 
- * @param mixed $value_posted 
- * @param mixed $value_old 
+ * @param string $key
+ * @param mixed $value
+ * @param mixed $value_posted
+ * @param mixed $value_old
  * @return mixed
  */
 function qwpseo_parse_value_posted($key, $value, $value_posted=null, $value_old=null)
@@ -221,9 +222,9 @@ function qwpseo_parse_value_posted($key, $value, $value_posted=null, $value_old=
 /**
  * Response to
  * apply_filters( 'wpseo_sanitize_tax_meta_' . $key, $clean[ $key ], ( isset( $meta_data[ $key ] ) ? $meta_data[ $key ] : null ), ( isset( $old_meta[ $key ] ) ? $old_meta[ $key ] : null ) );
- * @param mixed $value 
- * @param mixed $value_posted 
- * @param mixed $value_old 
+ * @param mixed $value
+ * @param mixed $value_posted
+ * @param mixed $value_old
  * @return mixed
  */
 function qwpseo_sanitize_tax_meta($value, $value_posted=null, $value_old=null)
@@ -234,12 +235,12 @@ function qwpseo_sanitize_tax_meta($value, $value_posted=null, $value_old=null)
 }
 
 /**
- * Response to 
+ * Response to
  * $check = apply_filters( "get_{$meta_type}_metadata", null, $object_id, $meta_key, $single );
- * @param mixed $value 
- * @param mixed $object_id 
- * @param mixed $meta_key 
- * @param mixed $single 
+ * @param mixed $value
+ * @param mixed $object_id
+ * @param mixed $meta_key
+ * @param mixed $single
  * @return mixed
  */
 function qwpseo_get_metadata_post($value, $object_id, $meta_key, $single){
